@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev
+  name: configmap-editor
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"] # Resources it can use
+  verbs: ["get", "update", "patch"] # Action it can perfrom 

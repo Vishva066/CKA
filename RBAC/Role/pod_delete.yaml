@@ -1,0 +1,9 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev
+  name: pod-deleter
+rules:
+- apiGroups: [""]
+  resources: ["pods"] # Resources it can use 
+  verbs: ["delete"] # Action it can perfrom

@@ -1,0 +1,34 @@
+kubectl create role pod-reader \
+  --verb=get,list,watch \
+  --resource=pods \
+  --namespace=dev
+
+# a Role that allows creating and deleting ConfigMaps
+
+kubectl create role cofig-admin \
+    --verb=create,delete \
+    --resource=cofigmap
+    --namespace=dev
+
+# a Role that allows full access to Secrets
+
+kubectl create role secret-full-access \
+    --verb=* \
+    --resource=secrets \
+    --namespace=dev
+
+# A Role that allows viewing Services and Endpoints
+
+kubectl create role svs-admin \
+    --verb=get,list \
+    --resource=service,endpoints
+    --namespace=dev
+
+
+# a Role that allows updating Deployments
+
+kubectl create role dep-update \
+    --verb=update \
+    --resource=deployment \
+    --namespace=dev
+

@@ -1,0 +1,29 @@
+# ClusterRole to Read Pods in All Namespaces
+
+kubectl create clusterrole pod-reader-all \
+    --verb=get,watch,list \
+    --resource=pod
+
+# ClusterRole to Manage Deployments Cluster-wide
+
+kubectl create clusterrole deploy-manage \
+    --verb=create,update,patch,delete  \
+    --resource=deployment
+
+# ClusterRole to View All Resources
+
+kubectl create clusterrole all \
+    --verb=get,watch,list \
+    --resource=*
+
+# ClusterRole for Node Management
+
+kubectl create clusterrole nodes-manage
+    --verb=get,watch,list,delete \
+    --resource=node
+
+ClusterRole for Secret Read Access Across Namespaces
+
+kubectl create clusterrole read-all \
+    --verb=get,list \
+    --resource=secrets

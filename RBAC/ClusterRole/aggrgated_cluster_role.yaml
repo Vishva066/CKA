@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monitoring-clusterrole
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      rbac.example.com/aggregate-to-monitoring: "true"
+rules: [] # Rules will be aggregated automatically
+
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader-role
+  labels:
+    rbac.example.com/aggregate-to-monitoring: "true"
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+
+
+# An aggregated ClusterRole allows you to compose a single ClusterRole from multiple other roles using labels. This is useful when you want to let different components or teams extend a role without modifying the original. 
+
+# How does it work?
+# You define a ClusterRole with a label selector in the aggregationRule.
+
+# Any other ClusterRole that matches that label will have its rules automatically added to the main ClusterRole.
+

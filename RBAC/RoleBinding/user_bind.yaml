@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding 
+metadata:
+  name: alice-pod-reader # Name of the rolebinding resource
+  namespace: dev # Namespace where the rolebinding is created
+subjects:
+- kind: User # Type of subject
+  name: alice # Name of the user (Can be case sensitive)
+  apiGroup: rbac.authorization.k8s.io 
+roleRef:
+  kind: Role
+  name: pod-reader # Name of the role to bind
+  apiGroup: rbac.authorization.k8s.io
