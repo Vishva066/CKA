@@ -46,8 +46,7 @@ spec:
     configMap:
       name: myconfigmap
 ```
-
-Configmap as env
+ConfigMap as Environment Variables
 
 ```yaml
 apiVersion: v1
@@ -58,14 +57,17 @@ spec:
   containers:
   - name: mypod
     image: redis
-    volumeMounts:
-    - name: foo
-      mountPath: "/etc/foo"
-      readOnly: true
-  volumes:
-  - name: foo
-    configMap:
-      name: myconfigmap
+    env:
+    - name: PLAYER_INITIAL_LIVES
+      valueFrom:
+        configMapKeyRef:
+          name: game-demo
+          key: player_initial_lives
+    - name: UI_PROPERTIES_FILE_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: game-demo
+          key: ui_properties_file_name
 ```
 
 # Secrets
@@ -155,7 +157,98 @@ data:
   password: MWYyZDFlMmU2N2Rm  # base64 encoded "1f2d1e2e67df"
 ```
 
+## TO decode a secret follow this method
 
+First print out the base64 secret using this method
+
+```bash
+kubectl get secret database-data -n database-ns  -o yaml
+```
+
+Now decode it using echo command
+
+```bash
+echo "c2VjcmV0" | base64 --decode
+```
+To do it in a single line use this method
+
+```bash
+kubectl get secret <secret-name> -n <namespace> -o jsonpath="{.data.<key>}" | base64 --decode
+```
+
+
+## Sample Questions for Configmap and Secrets
+
+1. Create a ConfigMap imperatively
+Task:
+
+Create a ConfigMap called app-config with:
+
+Key APP_ENV=production
+
+Key APP_VERSION=1.2
+
+```bash
+kubectl create configmap app-config --from-literal=APP_ENV=production --from-literal=APP_VERSION=1.2
+```
+
+2. Create a ConfigMap from a file
+
+Create a ConfigMap called file-config from a file /tmp/settings.conf.
+
+```bash
+kubectl create configmap file-config --from-file=/tmp/settings.conf
+
+```
+
+3.  Create a Secret imperatively
+Task:
+
+Create a Secret called db-secret with:
+
+username = admin
+
+password = password123
+
+```bash
+kubectl create secret generic db-secret --from-literal=username=admin --from-literal=password=password123
+```
+
+4. Mount ConfigMap into a Pod
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-pod
+spec:
+  containers:
+  - name: mycontainer
+    image: nginx
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: app-config
+```
+
+5.  Inject Secret as Environment Variables
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-pod
+spec:
+  containers:
+  - name: mycontainer
+    image: nginx
+    envFrom:
+    - secretRef:
+        name: db-secret
+```
 
 ### References
 

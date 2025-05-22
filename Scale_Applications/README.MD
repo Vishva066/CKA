@@ -130,6 +130,113 @@ Check HPA status
 kubectl get hpa
 ```
 
+## Sameple Questions and Answers
+
+1. Scale a Deployment imperatively
+
+Scale the deployment web-app to 5 replicas.
+
+```bash
+kubectl scale deployment web-app --replicas=5
+```
+
+2. Update replica count in manifest
+
+Edit a Deployment named api-server to have 4 replicas using the manifest file.
+
+```yaml
+kubectl edit deployment api-server
+
+spec:
+  replicas: 1 -> 4
+```
+
+3. Create a Deployment directly with desired replicas
+
+kubectl create deployment frontend --image=nginx --replicas=3
+
+
+4. Check the number of replicas running
+
+```bash
+kubectl get deployment my-app
+```
+
+5. Scale a StatefulSet
+
+```bash
+kubectl scale statefulset db --replicas=4
+```
+
+6. Create an HPA imperatively
+
+```bash
+kubectl autoscale deployment web-app --cpu-percent=50 --min=2 --max=5
+```
+
+7. Check an existing HPA
+Task:
+
+How do you list and describe an HPA named web-app?
+
+```bash
+kubectl get hpa
+kubectl describe hpa web-app
+```
+
+8. Create an HPA using a YAML file
+Task:
+
+Create an HPA from a YAML file for backend-app deployment with min 1 and max 4 replicas and target CPU utilization at 60%.
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-app
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+```
+
+9. Create a VPA (Vertical Pod Autoscaler)
+
+Create a VPA for api-server that suggests CPU/memory requests but does NOT automatically update the pods.
+
+```yaml
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: api-server-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      controlledResources: ["cpu", "memory"]
+```
+
+10. How do you view VPA recommendations?
+
+```bash
+kubectl describe vpa api-server-vpa
+```
 
 ### References
 

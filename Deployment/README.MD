@@ -111,21 +111,21 @@ spec:
 Create a deployment using this command
 
 ```bash
-kubectl create deploy <name> --image=<image> --replicas=<no_of_replicas> --namespace=<namespace>
+kubectl create deployment <name> --image=<image> --replicas=<no_of_replicas> --namespace=<namespace>
 
-k create deploy <name> --image=<image> --replicas=<no_of_replicas> --namespace=<namespace>
+k create deployment <name> --image=<image> --replicas=<no_of_replicas> --namespace=<namespace>
 ```
 
 Create a deployment with arguments using this commands
 
 ```bash
-k create deploy <name> --image=<name> -- sleep 300 #with command arguments
+k create deployment <name> --image=<name> -- sleep 300 #with command arguments
 ```
 
 To scale a particular kubernetes deployment use this command
 
 ```bash
-k scale deploy <name> --replicas=4 # scale up or down
+k scale --replicas=4 deployment/<name> # scale up or down
 ```
 
 Dry run -> Dry run refers to the process of testing the deployment without actually deploying it. It is useful for validating the configuration and ensuring that everything is set up correctly before applying changes to the cluster.
@@ -150,6 +150,14 @@ k create deploy web-deployment \
      --dry-run=client -o yaml > deployment.yaml
 
 kubectl apply -f deployment.yaml
+```
+
+To get the already deployed deployments use this command
+
+```bash
+kubectl get deployments --namespace=<namespace>
+
+kubectl get deployment <name> --namespace=<namespace> -o yaml > deployment.yaml
 ```
 
 ## Rolling and Rollback Update (Deployment Strategies)
@@ -186,6 +194,48 @@ kubectl rollout undo deployment/webapp --to-revision=2 # rollback to specific ve
 ```
 
 
+
+## Sample Questions
+
+1. Create a Deployment Imperatively
+Task:
+
+Create a Deployment called nginx-deploy.
+
+Use image nginx:1.25.
+
+It should have 3 replicas.
+
+```bash
+kubectl create deployment nginx-deploy --image=nginx:1.25 --replicas=3
+```
+
+2. Scale a Deployment
+Task:
+
+Scale the Deployment nginx-deploy to 5 replicas.
+
+```bash
+kubectl scale deployment nginx-deploy --replicas=5
+```
+
+3. Update the deployment
+
+```bash
+kubectl set image deployment/nginx-deploy nginx=nginx:1.26
+```
+
+4. Rollout Status Check
+
+```bash
+kubectl rollout status deployment/nginx-deploy
+```
+
+5. Undo a Rollout
+
+```bash
+kubectl rollout undo deployment/nginx-deploy
+```
 
 ### References
 

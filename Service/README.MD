@@ -16,6 +16,8 @@ The set of Pods targeted by a Service is usually determined by a selector that y
 
 - ExternalName: Maps the Service to the contents of the externalName field (e.g., foo.bar.example.com), by returning a CNAME record with its value. No proxying of any kind is set up.
 
+- Headless Service: Headless service is a special type of Kubernetes service without a ClusterIP. This means Kubernetes does not allocate a virtual IP for it. Instead, DNS returns the IPs of the backing Pods directly.
+
 ## ClusterIP
 
 This default Service type assigns an IP address from a pool of IP addresses that your cluster has reserved for that purpose.

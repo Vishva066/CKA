@@ -18,9 +18,9 @@ sudo apt install etcd-client
 2. We need to pass the following three pieces of information to etcdctl to take an etcd snapshot.
 
 - etcd endpoint (--endpoints) (advertise-client-urls)
-- ca certificate (--cacert) (cert-file)
-- server certificate (--cert) (key-file)
-- server key (--key) (trusted-ca-file)
+- ca certificate (--cacert) (trusted-ca-file)
+- server certificate (--cert) (cert-file)
+- server key (--key)  (key-file)
 
 /etc/kubernetes/manifests/etcd.yaml From this location you can get these values.
 

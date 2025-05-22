@@ -42,6 +42,8 @@ sudo apt-get update && sudo apt-get install -y kubeadm='1.32.x-*' && \
 sudo apt-mark hold kubeadm
 ```
 
+When a package is on hold, it will not be upgraded automatically by the package manager.
+
 Check if the expected version has been downloaded
 
 ```bash
@@ -84,7 +86,7 @@ IF you have any other control pane nodes execute the following command
 sudo kubeadm upgrade node
 ```
 
-## Drain the nodes
+## Worker nodes upgradation
 
 Prepare the node for maintenance by marking it unschedulable and evicting the workloads:
 
@@ -92,6 +94,19 @@ Prepare the node for maintenance by marking it unschedulable and evicting the wo
 kubectl drain <node-to-drain> --ignore-daemonsets
 ```
 
+Install kubeadm on worker nodes
+
+```bash
+sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm='1.32.x-*' && \
+sudo apt-mark hold kubeadm```
+```
+
+Then run thsi command to upgrade the node
+
+```bash
+kubeadm upgrade node
+```
 ## Upgrade kubelet and kubectl
 
 ```bash

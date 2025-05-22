@@ -1,6 +1,6 @@
 # Init Container
 
-Before the container starts, the init container will run before the main container. The init container can be sued to perform permission checks, create directories etc.
+Before the container starts, the init container will run before the main container. The init container can be used to perform permission checks, create directories etc.
 
 Eg
 

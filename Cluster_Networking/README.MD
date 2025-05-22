@@ -20,3 +20,23 @@ Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, S
 
 - The kubelet or the cloud-controller-manager is configured to assign IP addresses to Nodes.
 
+## Cluster Networking Sample Questions
+
+1. Create a Pod named hostnet-pod using the nginx image that runs in the host network namespace.
+
+```bash
+kubectl run hostnet-pod --image=nginx --overrides='
+{
+  "spec": {
+    "hostNetwork": true,
+    "containers": [{
+      "name": "nginx",
+      "image": "nginx"
+    }]
+  }
+}' --restart=Never
+
+```
+hostNetwork: true makes the pod share the node’s network namespace (i.e., pod uses node IP and ports directly).
+
+2. 
