@@ -17,3 +17,17 @@ To get the value using json path
 ```bash
 kubectl get svc redis-server --jsonpath='{.spec.ports[0].targetport}'
 ```
+
+To filter logs or output for a particular section using `grep`, you can use:
+
+```bash
+grep "desired_word" logs.txt
+```
+
+To view five lines after the matched word, use the `-A` option:
+
+```bash
+grep -A 5 "desired_word" logs.txt
+```
+
+This will display the matched line and the next five lines following it.

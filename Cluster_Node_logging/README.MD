@@ -27,17 +27,24 @@ kubectl describe node node1 -o yaml
 
 **Master Node**
 
-- Apiserver -> /var/log/kube-apiserver.log
+- Apiserver -> /var/log/container/kube-apiserver.log
 
-- Scheduler -> /var/log/kube-scheduler.log
+- Scheduler -> /var/log/container/kube-scheduler.log
 
-- Controller Mangaer -> /var/log/kube-controller-manager.log
+- Controller Mangaer -> /var/log/container/kube-controller-manager.log
 
 **Worker Node and Master Node**
 
-- Kubelet -> /var/log/kubelet.log
+- Kubelet -> /var/log/container/kubelet.log
 
-- Kube Proxy -> /var/log/kube-proxy.log
+- Kube Proxy -> /var/log/container/kube-proxy.log
 
 Can also use journalctl for logging
 
+## Journalctl logging
+
+Journalctl can be used to view system level logs (It can be used to see the logs of journalctl)
+
+```bash
+journalctl -u kubelet
+```

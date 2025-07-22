@@ -60,7 +60,7 @@ Well, there are two default high-priority classes set by Kubernetes
 
 4. The scheduler preempts (evicts) low priority pod from a node where it can schedule the higher-priority pod. The evicted pod gets a graceful default termination time of 30 seconds. If pods have terminationGracePeriodSeconds set for preStop container Lifecycle Hooks, it overrides the default 30 seconds.
 
-5. owever, if for some reason, the scheduling requirements are not met, the scheduler goes ahead with scheduling the lower-priority pods.
+5. However, if for some reason, the scheduling requirements are not met, the scheduler goes ahead with scheduling the lower-priority pods.
 
 ### References
 

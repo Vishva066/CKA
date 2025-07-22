@@ -78,11 +78,11 @@ spec:
         - containerPort: 80
         resources:
           limits:
-            memory: "2Gi"
-            cpu: "1000m"
+            memory: "200Mi"
+            cpu: "100m"
           requests: 
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "100Mi"
+            cpu: "50m"
 ```
 
 **Service Example**
@@ -235,6 +235,35 @@ kubectl rollout status deployment/nginx-deploy
 
 ```bash
 kubectl rollout undo deployment/nginx-deploy
+```
+
+## Adding Change Cause During Rollout
+
+To add a change cause while performing a rollout in Kubernetes, you can use the `--record` flag. This flag records the command used to make changes in the resource's annotations, which can later be viewed in the rollout history.
+
+### Example
+
+```bash
+kubectl set image deployment/nginx-deploy nginx=nginx:1.27 --record
+```
+
+### Viewing the Change Cause
+
+You can view the recorded change cause in the rollout history using the following command:
+
+```bash
+kubectl rollout history deployment/nginx-deploy
+```
+
+The output will include the change cause along with the revision details.
+
+### Notes
+
+- The `--record` flag is optional but useful for tracking changes.
+- If you forget to use `--record`, you can manually add a change cause by editing the deployment's annotations.
+
+```bash
+kubectl annotate deployment/nginx-deploy kubernetes.io/change-cause="Updated nginx image to 1.27"
 ```
 
 ### References

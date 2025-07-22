@@ -16,108 +16,145 @@ Kustomize operates by allowing users to overlay their base Kubernetes manifests 
 curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 ```
 
-2. The “kustomization.yaml” file is the main file that is used by the Kustomize tool. In this file, we provide details of our required customizations. The customizations include:
+In some directory containing your YAML [resource]
+files (deployments, services, configmaps, etc.), create a
+[kustomization] file.
 
-What are the resources that we are going to edit using Kustomize
-What are the patches that we are going to apply
-Given below is a simple implementation of Kustomize. Consider we have a deployment file with us.
+This file should declare those resources, and any
+customization to apply to them, e.g. _add a common
+label_.
 
-```yaml
-apiVersion: apps/v1
-
-kind: Deployment
-
-metadata:
-  name: api-deployment
-  namespace: api-dev
-
-spec:
-  selector:
-    matchLabels:
-      app: api
-  template:
-    metadata:
-      labels:
-        app: api
-    spec:
-      containers:
-      - name: api
-        image: neron/nginx-dev:1.0
 ```
 
-Now we need to change the namespace and image for this we can create a kustomization.yaml file a provide **required transformers or patches**.
+base: kustomization + resources
 
-Eg file
+kustomization.yaml                                      deployment.yaml                                                 service.yaml
++---------------------------------------------+         +-------------------------------------------------------+       +-----------------------------------+
+| apiVersion: kustomize.config.k8s.io/v1beta1 |         | apiVersion: apps/v1                                   |       | apiVersion: v1                    |
+| kind: Kustomization                         |         | kind: Deployment                                      |       | kind: Service                     |
+| labels:                                     |         | metadata:                                             |       | metadata:                         |
+| - includeSelectors: true                    |         |   name: myapp                                         |       |   name: myapp                     |
+|   pairs:                                    |         | spec:                                                 |       | spec:                             |
+|     app: myapp                              |         |   selector:                                           |       |   selector:                       |
+| resources:                                  |         |     matchLabels:                                      |       |     app: myapp                    |
+|   - deployment.yaml                         |         |       app: myapp                                      |       |   ports:                          |
+|   - service.yaml                            |         |   template:                                           |       |     - port: 6060                  |
+| configMapGenerator:                         |         |     metadata:                                         |       |       targetPort: 6060            |
+|   - name: myapp-map                         |         |       labels:                                         |       +-----------------------------------+
+|     literals:                               |         |         app: myapp                                    |
+|       - KEY=value                           |         |     spec:                                             |
++---------------------------------------------+         |       containers:                                     |
+                                                        |         - name: myapp                                 |
+                                                        |           image: myapp                                |
+                                                        |           resources:                                  |
+                                                        |             limits:                                   |
+                                                        |               memory: "128Mi"                         |
+                                                        |               cpu: "500m"                             |
+                                                        |           ports:                                      |
+                                                        |             - containerPort: 6060                     |
+                                                        +-------------------------------------------------------+
 
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-
-kind: Kustomization
-
-# resources section contains the resources that kustomize is handling
-resources:
-  - deployment.yaml
-
-namespace: api-prod
-
-images:
-  - name: neron/nginx-dev:1.0
-    newName: neron/nginx-prod
-    newTag: "1.0" 
 ```
 
-**Note: In this case, both the deployment.yaml file and kustomization.yaml file must be on the same directory.**
+File structure:
 
-```bash
-kustomize build base-directory/
+> ```
+> ~/someApp
+> ├── deployment.yaml
+> ├── kustomization.yaml
+> └── service.yaml
+> ```
+
+The resources in this directory could be a fork of
+someone else's configuration.  If so, you can easily
+rebase from the source material to capture
+improvements, because you don't modify the resources
+directly.
+
+Generate customized YAML with:
+
+```
+kustomize build ~/someApp
 ```
 
-Base directory is where the deployment.yaml and kustomization.yaml file is present
+The YAML can be directly [applied] to a cluster:
 
-To apply to the k8s cluster follow this command
+> ```
+> kustomize build ~/someApp | kubectl apply -f -
+> ```
 
-```bash
-kustomize build base-directory/ | kubectl apply -f -
 
-OR
+### 2) Create [variants] using [overlays]
 
-kubectl apply -k base-directory/
+Manage traditional [variants] of a configuration - like
+_development_, _staging_ and _production_ - using
+[overlays] that modify a common [base].
+
 ```
 
-## Transformers
+overlay: kustomization + patches
 
-Transformers are used to create new resources under manifest by applying a series of transformations to the original set of resources.
-
-- commonLabel - Add labels to existing manifest files
-
-- namePrefix of nameSuffix - Add prefix or suffix to existing resource names, we can use  this transformer
-
-- namespace - Add or update namespace from manifests
-
-- images - Add or update images from manifests
-
-## Patches
-
-In Kustomize, we can apply patches to manifest file instead of using “patches” function.
-
-- target -> Where we are going to apply the patch
-
-- operation type -> Operation to perform (add/remove/replace)
-
-- path -> Resource we are going to apply the patch
-
-- value -> With what values we are going to apply
-
-```yaml
-patches:
-  - target:
-      kind: Deployment
-      name: api-deployment
-    patch: |-
-      - op: replace 
-        path: /spec/template/spec/containers/0
-        value: 
-          name: api
-          image: nginx
+kustomization.yaml                                      replica_count.yaml                      cpu_count.yaml
++-----------------------------------------------+       +-------------------------------+       +------------------------------------------+
+| apiVersion: kustomize.config.k8s.io/v1beta1   |       | apiVersion: apps/v1           |       | apiVersion: apps/v1                      |
+| kind: Kustomization                           |       | kind: Deployment              |       | kind: Deployment                         |
+| labels:                                       |       | metadata:                     |       | metadata:                                |
+|  - includeSelectors: true                     |       |   name: myapp                 |       |   name: myapp                            |
+|    pairs:                                     |       | spec:                         |       | spec:                                    |
+|      variant: prod                            |       |   replicas: 80                |       |  template:                               |
+| resources:                                    |       +-------------------------------+       |     spec:                                |
+|   - ../../base                                |                                               |       containers:                        |
+| patches:                                      |                                               |         - name: myapp                    |
+|   - path: replica_count.yaml                  |                                               |           resources:                     |
+|   - path: cpu_count.yaml                      |                                               |             limits:                      |
++-----------------------------------------------+                                               |               memory: "128Mi"            |
+                                                                                                |               cpu: "7000m"               |
+                                                                                                +------------------------------------------+
 ```
 
+
+File structure:
+> ```
+> ~/someApp
+> ├── base
+> │   ├── deployment.yaml
+> │   ├── kustomization.yaml
+> │   └── service.yaml
+> └── overlays
+>     ├── development
+>     │   ├── cpu_count.yaml
+>     │   ├── kustomization.yaml
+>     │   └── replica_count.yaml
+>     └── production
+>         ├── cpu_count.yaml
+>         ├── kustomization.yaml
+>         └── replica_count.yaml
+> ```
+
+Take the work from step (1) above, move it into a
+`someApp` subdirectory called `base`, then
+place overlays in a sibling directory.
+
+An overlay is just another kustomization, referring to
+the base, and referring to patches to apply to that
+base.
+
+This arrangement makes it easy to manage your
+configuration with `git`.  The base could have files
+from an upstream repository managed by someone else.
+The overlays could be in a repository you own.
+Arranging the repo clones as siblings on disk avoids
+the need for git submodules (though that works fine, if
+you are a submodule fan).
+
+Generate YAML with
+
+```sh
+kustomize build ~/someApp/overlays/production
+```
+
+The YAML can be directly [applied] to a cluster:
+
+> ```sh
+> kustomize build ~/someApp/overlays/production | kubectl apply -f -
+> ```

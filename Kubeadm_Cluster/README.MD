@@ -51,7 +51,7 @@ net.ipv4.ip_forward = 1
 
 4. Install container runtime (containerd or docker)
 
-5. Install kubeadm, kubelet and kubctl
+5. Install kubeadm, kubelet and kubectl
 
 6. Initialize the cluster using kubeadm init
 

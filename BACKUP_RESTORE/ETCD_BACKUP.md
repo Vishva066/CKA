@@ -54,9 +54,9 @@ sudo ETCDCTL_API=3 etcdctl --write-out=table snapshot status /opt/etcd.db
 
 ### ETCD RESTORE
 
-Before rstoring the etcd follow these steps
+Before restoring the etcd follow these steps
 
-- Stop all API server instancem
+- Stop all API server instances
 
 - Restore the etcd instance
 

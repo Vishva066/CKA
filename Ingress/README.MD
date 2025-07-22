@@ -54,16 +54,16 @@ metadata:
 spec:
     ingressClassName: nginx
     rules:
-        - host: example.com
-            http:
-                paths:
-                    - path: /
-                        pathType: Prefix
-                        backend:
-                            service:
-                                name: example-service
-                                port:
-                                    number: 80
+      - host: example.com
+          http:
+            paths:
+              - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: example-service
+                      port:
+                        number: 80
 ```
 
 In this example:
